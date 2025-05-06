@@ -1,69 +1,205 @@
 # MRI Translation Hyperparameter Search Repository
 
+This repository supports research in **3T-to-7T brain MRI image translation**. It contains preprocessing, baseline and improved model training scripts, and a two-stage hyperparameter search pipeline for tuning six loss components in a GAN-based architecture.
 
-
-This repository supports research in **3T-to-7T brain MRI image translation**. It contains preprocessing, baseline and improved model training scripts, and a two-stage hyperparameter search pipeline for fine-tuning six loss terms in a GAN-based architecture.
+---
 
 ## 📁 Repository Layout
 
 3t-to-7t-mri/
-├── Aligned/ # Preprocessed paired 3T/7T data
-├── baseline.py # Baseline UNet+GAN training/testing
-├── final_model.py # Improved model for training/testing
-├── test.py # Shared training/test script for grid search
-├── run_single_job.sh # Stage 2: random 6-loss sweep (3 epochs)
-├── loss_search.sh # Stage 3: fine-tuning top configs (30 epochs)
-├── graph.py # Plots Stage 2 SSIM vs PSNR scatter
-├── final_graph.py # Aggregates Stage 2 & 3 plots
-├── README.md # You are here!
+├── Aligned/ # Preprocessed paired 3T/7T MRI slices
+├── baseline.py # Baseline UNet+GAN training/testing script
+├── final_model.py # Improved model script (finalized for deployment)
+├── test.py # Core training/testing script (used by search scripts)
+├── run_single_job.sh # Stage 2: 50-random-combo 3-epoch grid search
+├── loss_search.sh # Stage 3: fine-tuning top configs for 30 epochs
+├── graph.py # Stage 2: SSIM vs PSNR scatter plot
+├── final_graph.py # Stage 2 + Stage 3 plot aggregator
+├── README.md # This file
 
+
+---
 
 ## 🔧 Core Scripts
 
 ### `baseline.py`
-Runs baseline UNet+GAN training and evaluation. Results stored under `baseline/`.
+Trains a UNet+GAN baseline model. Outputs model checkpoints and test metrics to the `baseline/` directory.
 
 ### `final_model.py`
-Trains the improved model using best-found hyperparameters. Used to export final deployable results.
+Trains and tests the improved model with optimal hyperparameters. Used for final evaluation and export.
 
 ### `test.py`
-Shared script used by both grid search stages. Accepts all key parameters:
-```bash
---mode {train,test}
---lambda_l1, --lambda_fm, --lambda_gan, --lambda_cycle, --lambda_percep, --lambda_gp
---summary_csv                # logs average metrics
-🔍 Grid Search Pipeline
+General-purpose script used by both search stages. Accepts:
+- `--mode {train,test}`
+- All six loss weight arguments:  
+  `--lambda_l1`, `--lambda_fm`, `--lambda_gan`, `--lambda_cycle`, `--lambda_percep`, `--lambda_gp`
+- `--summary_csv`: logs average PSNR/SSIM results to a global CSV.
 
-Stage 2: Random Sweep (run_single_job.sh)
-Samples 50 random 6-loss combinations.
-Runs 3-epoch trials via test.py.
-Saves metrics in grid_search/6loss_grid_random/metrics_summary.csv.
-Outputs:
-stage2_scatter.png (SSIM vs PSNR)
-Stage 3: Fine-Tuning (loss_search.sh)
-Selects top-3 from Stage 2.
-Fine-tunes each for 30 epochs.
-Logs SSIM and PSNR curves:
-stage3_ssim_curves.png
-stage3_psnr_curves.png
-📊 Visualization
+---
 
-graph.py
-Creates Stage 2 scatter plot (stage2_scatter.png).
+## 🔍 Grid Search Pipeline
 
-final_graph.py
-Combines and plots:
+### **Stage 2: Random Sweep**
+**Script**: `run_single_job.sh`  
+- Samples 50 random 6-loss configurations.
+- Trains each for 3 epochs using `test.py`.
+- Saves to: `grid_search/6loss_grid_random/metrics_summary.csv`
+- Output:  
+  - `stage2_scatter.png`: SSIM vs PSNR plot
 
-Stage 2 scatter
-Stage 3 SSIM/PSNR convergence curves
-🚀 Quickstart
+### **Stage 3: Fine-Tuning**
+**Script**: `loss_search.sh`  
+- Selects top 3 configs from Stage 2.
+- Fine-tunes each for 30 epochs.
+- Saves per-epoch logs under: `stage3/<config_name>/val_log.csv`
+- Output:  
+  - stage3_ssim_curves.png
+  - stage3_psnr_curves.png
 
-Train final model:
+---
+
+## 📊 Visualization
+
+### `graph.py`
+Reads metrics_summary.csv and creates a scatter plot of Stage 2 (SSIM vs PSNR).
+
+### final_graph.py
+Aggregates Stage 2 & Stage 3 results:
+- stage2_scatter.png
+- stage3_ssim_curves.png
+- stage3_psnr_curves.png
+
+---
+
+## 🚀 Quickstart
+
+**Train final model:**
+bash
 python final_model.py --mode train
 Test final model:
+
 python final_model.py --mode test
 📬 Contact
 
 Maintainer: Yaxin Su
-📧 yaxin.su@yale.edu
+Email: yaxin.su@yale.edu
 
+
+需要我帮你保存为 `README.md` 文件或者直接推送到你的仓库里吗？
+You said:
+README.md
+ChatGPT said:
+✅ 已生成格式完整的 README.md 文件：点击下载 README.md
+
+你可以将这个文件直接替换到你的项目根目录中，并 git add, commit, push。需要我帮你写一段提交用的 Git 命令吗？ 
+
+
+
+
+
+Search
+
+Deep research
+
+Create image
+
+
+
+ChatGPT can make mistakes. Check important info.
+Analysis
+
+Always show details
+
+# Save the cleaned and formatted README.md content to a file
+
+readme_content = """
+# MRI Translation Hyperparameter Search Repository
+
+This repository supports research in **3T-to-7T brain MRI image translation**. It contains preprocessing, baseline and improved model training scripts, and a two-stage hyperparameter search pipeline for tuning six loss components in a GAN-based architecture.
+
+---
+
+## 📁 Repository Layout
+
+3t-to-7t-mri/
+├── Aligned/ # Preprocessed paired 3T/7T MRI slices
+├── baseline.py # Baseline UNet+GAN training/testing script
+├── final_model.py # Improved model script (finalized for deployment)
+├── test.py # Core training/testing script (used by search scripts)
+├── run_single_job.sh # Stage 2: 50-random-combo 3-epoch grid search
+├── loss_search.sh # Stage 3: fine-tuning top configs for 30 epochs
+├── graph.py # Stage 2: SSIM vs PSNR scatter plot
+├── final_graph.py # Stage 2 + Stage 3 plot aggregator
+├── README.md # This file
+
+Always show details
+
+
+---
+
+## 🔧 Core Scripts
+
+### `baseline.py`
+Trains a UNet+GAN baseline model. Outputs model checkpoints and test metrics to the `baseline/` directory.
+
+### `final_model.py`
+Trains and tests the improved model with optimal hyperparameters. Used for final evaluation and export.
+
+### `test.py`
+General-purpose script used by both search stages. Accepts:
+- `--mode {train,test}`
+- All six loss weight arguments:  
+  `--lambda_l1`, `--lambda_fm`, `--lambda_gan`, `--lambda_cycle`, `--lambda_percep`, `--lambda_gp`
+- `--summary_csv`: logs average PSNR/SSIM results to a global CSV.
+
+---
+
+## 🔍 Grid Search Pipeline
+
+### **Stage 2: Random Sweep**
+**Script**: `run_single_job.sh`  
+- Samples 50 random 6-loss configurations.
+- Trains each for 3 epochs using `test.py`.
+- Saves to: `grid_search/6loss_grid_random/metrics_summary.csv`
+- Output:  
+  - `stage2_scatter.png`: SSIM vs PSNR plot
+
+### **Stage 3: Fine-Tuning**
+**Script**: `loss_search.sh`  
+- Selects top 3 configs from Stage 2.
+- Fine-tunes each for 30 epochs.
+- Saves per-epoch logs under: `stage3/<config_name>/val_log.csv`
+- Output:  
+  - `stage3_ssim_curves.png`
+  - `stage3_psnr_curves.png`
+
+---
+
+## 📊 Visualization
+
+### `graph.py`
+Reads `metrics_summary.csv` and creates a scatter plot of Stage 2 (SSIM vs PSNR).
+
+### `final_graph.py`
+Aggregates Stage 2 & Stage 3 results:
+- `stage2_scatter.png`
+- `stage3_ssim_curves.png`
+- `stage3_psnr_curves.png`
+
+---
+
+## 🚀 Quickstart
+
+**Train final model:**
+```bash
+python final_model.py --mode train
+Test final model:
+
+Always show details
+
+python final_model.py --mode test
+📬 Contact
+
+Maintainer: Yaxin Su
+Email: yaxin.su@yale.edu
+"""
